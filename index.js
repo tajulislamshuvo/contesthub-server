@@ -33,6 +33,7 @@ async function run() {
     const userCollection = db.collection('users');
     const contestCollection = db.collection('contests');
     const paymentCollection = db.collection('payment');
+    const submissionCollection = db.collection('submissions');
 
 
     // users api
@@ -109,6 +110,10 @@ async function run() {
       const result = await contestCollection.updateOne(query, updateStatus);
       res.send(result)
     })
+
+    // ============== COntest submission =================
+    app.post
+
 
 
     //=============== Payment related apis ==============
