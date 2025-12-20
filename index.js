@@ -56,13 +56,30 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/user/:id/role', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const roleInfo = req.body;
+      const updateRole = {
+        $set: {
+          role: roleInfo.role
+        }
+      }
+
+      const result = await userCollection.updateOne(query, updateRole);
+      res.send(result)
+    })
+
 
     // =================== contest related api ================
     app.get('/contests', async (req, res) => {
-      const { status } = req.query;
+      const { status, creatorEmail } = req.query;
       const query = {};
       if (status) {
         query.status = status;
+      }
+      if (creatorEmail) {
+        query.creatorEmail = creatorEmail
       }
 
       const result = await contestCollection.find(query).sort({ createdAt: -1 }).toArray();
@@ -97,6 +114,28 @@ async function run() {
       res.send(result);
     })
 
+    app.patch('/contests/edit/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const editInfo = req.body;
+      const updateEditInfo = {
+        $set: {
+          name: editInfo.name,
+          image: editInfo.image,
+          description: editInfo.description,
+          price: editInfo.price,
+          prize: editInfo.prize,
+          instruction: editInfo.instruction,
+          type: editInfo.type,
+          startTime: editInfo.startTime,
+          endTime: editInfo.endTime
+        }
+      }
+
+      const result = await contestCollection.updateOne(query, updateEditInfo);
+      res.send(result)
+    })
+
     app.patch('/contest/:id/status', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -111,9 +150,66 @@ async function run() {
       res.send(result)
     })
 
-    // ============== COntest submission =================
-    app.post
 
+
+    app.delete('/contest/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await contestCollection.deleteOne(query);
+      res.send(result)
+    })
+
+
+    // ============== COntest submission =================
+    // app.get('/submissions/:id', async (req, res) => {
+    //   const { id } = req.params;
+    //   const query = { contestId: new ObjectId(id) };
+    //   const result = await submissionCollection.find(query).toArray();
+    //   res.send(result)
+    // })
+
+    app.get('/submissions/contest/:contestId', async (req, res) => {
+      const { contestId } = req.params;
+
+
+
+      const submissions = await submissionCollection
+        .find({ contestId: contestId })
+        .toArray();
+
+      res.send(submissions);
+    });
+
+
+
+    app.post('/submissions', async (req, res) => {
+      const submission = req.body;
+
+      const existingSubmission = await submissionCollection.findOne({
+        contestId: submission.contestId, participantEmail: submission.participantEmail
+      });
+      if (existingSubmission) {
+        return res.status(409).send({ message: 'submission already submit' })
+      }
+
+      const result = await submissionCollection.insertOne(submission);
+      res.send(result);
+    })
+
+    app.patch('/submission/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const editInfo = req.body;
+      const updateWinnerInfo = {
+        $set: {
+          isWinner: editInfo.isWinner,
+
+        }
+      }
+
+      const result = await submissionCollection.updateOne(query, updateWinnerInfo);
+      res.send(result)
+    })
 
 
     //=============== Payment related apis ==============
