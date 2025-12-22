@@ -78,6 +78,8 @@ async function run() {
     })
 
 
+
+
     // =================== contest related api ================
     app.get('/contests', async (req, res) => {
       const { status, creatorEmail } = req.query;
@@ -174,6 +176,12 @@ async function run() {
     //   const result = await submissionCollection.find(query).toArray();
     //   res.send(result)
     // })
+
+    app.get('/contest-winner', async (req, res) => {
+      const winner = await submissionCollection.find({ isWinner: true }).sort({ createdAt: -1 }).limit(6).toArray();
+      res.send(winner)
+    })
+
 
     app.get('/submissions/contest/:contestId', async (req, res) => {
       const { contestId } = req.params;
