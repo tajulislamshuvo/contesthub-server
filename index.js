@@ -176,13 +176,7 @@ async function run() {
     })
 
 
-    // ============== COntest submission =================
-    // app.get('/submissions/:id', async (req, res) => {
-    //   const { id } = req.params;
-    //   const query = { contestId: new ObjectId(id) };
-    //   const result = await submissionCollection.find(query).toArray();
-    //   res.send(result)
-    // })
+
 
     app.get('/contest-winner', async (req, res) => {
       const winner = await submissionCollection.find({ isWinner: true }).sort({ createdAt: -1 }).limit(6).toArray();
