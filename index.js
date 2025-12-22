@@ -253,6 +253,20 @@ async function run() {
 
 
     //=============== Payment related apis ==============
+    app.get('/transaction/:email', async (req, res) => {
+      const { email } = req.params;
+
+
+
+      const transaction = await paymentCollection
+        .find({ customerEmail: email })
+        .toArray();
+
+      res.send(transaction);
+    });
+
+
+
     app.get('/payments', async (req, res) => {
       const { customerEmail, contestId } = req.query;
       const query = {};
