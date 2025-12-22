@@ -211,6 +211,46 @@ async function run() {
       res.send(result)
     })
 
+    app.patch('/submissions/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const editInfo = req.body;
+      const updateSubmitInfo = {
+        $set: {
+          submissionData: editInfo.submissionData,
+
+
+        }
+      }
+
+      const result = await submissionCollection.updateOne(query, updateSubmitInfo);
+      res.send(result)
+
+
+
+    })
+
+
+    app.get('/submissions/:email', async (req, res) => {
+      const { email } = req.params;
+
+
+
+      const submissions = await submissionCollection
+        .find({ participantEmail: email })
+        .toArray();
+
+      res.send(submissions);
+    });
+
+
+    app.delete('/submission/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await submissionCollection.deleteOne(query);
+      res.send(result)
+    })
+
 
     //=============== Payment related apis ==============
     app.get('/payments', async (req, res) => {
