@@ -168,6 +168,13 @@ async function run() {
       res.send(result)
     })
 
+    // review search api
+    app.get('/search', async (req, res) => {
+      const search_text = req.query.search;
+      const result = await contestCollection.find({ type: { $regex: search_text, $options: "i" } }).toArray();
+      res.send(result)
+    })
+
 
     // ============== COntest submission =================
     // app.get('/submissions/:id', async (req, res) => {
